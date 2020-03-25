@@ -13,7 +13,7 @@ loadScriptAsync("https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.
 
 // See https://developers.google.com/youtube/v3/docs/playlists/list?apix=true
 
-export async function GetYouTubePlaylists() {
+export async function getYouTubePlaylists() {
 
     await LoadGapi();
     var list=await gapi.client.youtube.playlists.list({
@@ -30,15 +30,15 @@ export async function GetYouTubePlaylists() {
         result.thumbnail = list.result.items[i].snippet.thumbnails.default.url;
         resultlist.push(result);
     }
-    console.log("In GetYouTubePlaylists");
+    console.log("In getYouTubePlaylists");
     console.log(resultlist);
     return resultlist;
 }
 
-export async function GetYouTubePlayListVideos() {
+export async function getYouTubePlayListVideos() {
 
     const queryString = window.location.search;
-    console.log(`In GetYouTubePlayListVideos queryString=${queryString}`);
+    console.log(`In getYouTubePlayListVideos queryString=${queryString}`);
 
     const urlParams = new URLSearchParams(queryString);
     console.log(urlParams);
@@ -61,7 +61,7 @@ export async function GetYouTubePlayListVideos() {
         });
         nextPageToken = list.result.nextPageToken;
         console.log(list);
-        console.log(`GetYouTubePlayListVideos: next ${list.result.items.length} records`);
+        console.log(`getYouTubePlayListVideos: next ${list.result.items.length} records`);
         //console.log(nextPageToken);
         var idlist="";
 

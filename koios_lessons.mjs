@@ -1,7 +1,7 @@
 /*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
 
-import {GetYouTubePlaylists,GetYouTubePlayListVideos}     from './koios_youtube.mjs';
+import {getYouTubePlaylists,getYouTubePlayListVideos}     from './koios_youtube.mjs';
 import {LinkButton,HideButton} from './koios_util.mjs';
 
 // Global vars
@@ -59,7 +59,7 @@ var onlyLessonsIndexList=[];
 
 export async function DisplayLessons(LoadVideoCB) {
     var x=await GetYouTubePlaylists();
-    var items=await GetYouTubePlayListVideos();
+    var items=await getYouTubePlayListVideos();
 
     for (var i=0;i<items.length;i++) {
        if (items[i].chapter)
