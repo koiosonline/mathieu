@@ -14,7 +14,7 @@ export class Ipfs
 
   getPlaylist()
   {
-
+    return this.playlist;
   }
 
   async setPlaylist()
