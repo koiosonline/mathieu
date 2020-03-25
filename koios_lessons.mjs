@@ -1,18 +1,19 @@
+/*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
 
-import {GetYouTubePlaylists,GetYouTubePlayListItems}     from './koios_youtube.mjs';
+import {GetYouTubePlaylists,GetYouTubePlayListVideos}     from './koios_youtube.mjs';
 import {LinkButton,HideButton} from './koios_util.mjs';
 
 // Global vars
-var PrepareLessonsListTemplate;   
-var PrepareLessonsListParent;  
-var PrepareChapterTemplate;   
-var PrepareChapterParent;  
+var PrepareLessonsListTemplate;
+var PrepareLessonsListParent;
+var PrepareChapterTemplate;
+var PrepareChapterParent;
 var CurrentLesson=0;
 var globalLessonslist; // format:
-// title   
+// title
 // chapter   (boolean)
-// description  
+// description
 // thumbnail
 // videoid
 
@@ -38,10 +39,10 @@ class Chapter extends Task {
 
 class Lesson {
     constructor() {
-        this.length = 0;  
+        this.length = 0;
         this.data = {};
     }
-}    
+}
 const lesson= new Lesson();
 
 
@@ -50,25 +51,25 @@ class Video {
    slides   => time
    transcripts [language] => time
    time[] => slide / transcript
-}    
+}
 */
 
 
-var onlyLessonsIndexList=[]
+var onlyLessonsIndexList=[];
 
 export async function DisplayLessons(LoadVideoCB) {
-    var x=await GetYouTubePlaylists()
-    var items=await GetYouTubePlayListItems()
-    
+    var x=await GetYouTubePlaylists();
+    var items=await GetYouTubePlayListVideos();
+
     for (var i=0;i<items.length;i++) {
        if (items[i].chapter)
-          AddChapter(items[i].title)
+          AddChapter(items[i].title);
        else {
           AddLessonsItem(items[i].title,items[i].thumbnail,items[i].description,items[i].videoid,items[i].duration,LoadVideoCB);
-       } 
-    }    
+       }
+    }
     globalLessonslist = items;
-    return SelectLesson(3,LoadVideoCB) // select a lesson with slides
+    return SelectLesson(3,LoadVideoCB); // select a lesson with slides
 }
 
 
@@ -76,25 +77,25 @@ export async function DisplayLessons(LoadVideoCB) {
 function PrepareLessonsList() {
     console.log("In PrepareLessonsList");
     var list = document.getElementsByClassName("list-lessons");
-    //console.log(list)    
+    //console.log(list)
     if (list && list[0]) {
-        PrepareLessonsListTemplate = list[0];        
-        PrepareLessonsListParent   = list[0].parentNode
+        PrepareLessonsListTemplate = list[0];
+        PrepareLessonsListParent   = list[0].parentNode;
         list[0].remove();
     } else
         console.error("list-lessons not found");
-    
+
     list = document.getElementsByClassName("list-chapter");
     //console.log(list)
     if (list && list[0]) {
         PrepareChapterTemplate = list[0];
-        PrepareChapterParent   = list[0].parentNode
+        PrepareChapterParent   = list[0].parentNode;
         list[0].remove();
     } else
         console.error("list-chapter not found");
-        
-    PrepareLessonsList = function(){} // next time do nothing
-}    
+
+    PrepareLessonsList = function(){}; // next time do nothing
+}
 
 
 function AddLessonsItem(txt,thumbnail,description,videoid,duration,LoadVideoCB) {
@@ -105,40 +106,40 @@ function AddLessonsItem(txt,thumbnail,description,videoid,duration,LoadVideoCB) 
     vidinfo.duration=duration;
     vidinfo.txt=txt;
     vidinfo.description=description;
-    
+
     onlyLessonsIndexList.push(vidinfo);
     var index=onlyLessonsIndexList.length-1;
-    
+
     var cln = PrepareLessonsListTemplate.cloneNode(true);
     PrepareLessonsListParent.appendChild(cln);
     cln.getElementsByTagName("div")[0].innerHTML=txt;
-    cln.getElementsByTagName("img")[0].src=thumbnail;    
+    cln.getElementsByTagName("img")[0].src=thumbnail;
     cln.id=`lesson-${index}`;
-    
+
     LinkButton(cln.id,x=> {
         console.log(`select lesson ${index}`);
-        SelectLesson(index,LoadVideoCB,duration)
+        SelectLesson(index,LoadVideoCB,duration);
     });
-    
-} 
+
+}
 
 
 
 function AddChapter(txt) {
     PrepareLessonsList();
-    //console.log(`In AddChapter ${txt} `);    
+    //console.log(`In AddChapter ${txt} `);
     var cln = PrepareChapterTemplate.cloneNode(true);
     PrepareChapterParent.appendChild(cln);
     cln.getElementsByTagName("div")[0].innerHTML=txt;
-} 
+}
 
 
 
 
- 
+
 var fPrepped=false;
 
-async function SelectLesson(index,LoadVideoCB) {   
+async function SelectLesson(index,LoadVideoCB) {
     function PrepButtons(buttonBack,buttonForward) {
         if (!fPrepped) {
             LinkButton(buttonBack   ,x=> SelectLesson(CurrentLesson-1,LoadVideoCB));
@@ -147,32 +148,32 @@ async function SelectLesson(index,LoadVideoCB) {
         }
          HideButton(buttonBack,    CurrentLesson-1 < 0);
          HideButton(buttonForward, CurrentLesson+1 >= onlyLessonsIndexList.length );
-    }    
+    }
     var prevdomid=document.getElementById(`lesson-${CurrentLesson}`);
-    if (prevdomid) {        
+    if (prevdomid) {
        prevdomid.style.borderColor=""; // reset to original
     }
     var domid=document.getElementById(`lesson-${index}`);
     if (domid)
        domid.style.borderColor="red";
-   CurrentLesson=index;   
+   CurrentLesson=index;
    PrepButtons("back","forward");
-   return LoadVideoCB(onlyLessonsIndexList[CurrentLesson]);   
+   return LoadVideoCB(onlyLessonsIndexList[CurrentLesson]);
 }
 
 
 function MoveLesson(fNext) { // false is previous, true is next
     startLesson += direction;
- 
+
     if (startLesson < 0) return MoveLesson(0); // search first lesson
     if (startLesson >= globalLessonslist.length) startLesson=globalLessonslist.length;
- 
+
     while (globalLessonslist[startLesson].chapter) {
         CurrentLesson += (direction==0?1:direction);
         if (startLesson < 0) return -1;
         if (startLesson >= globalLessonslist.length) return globalLessonslist.length;
-    } 
-    return startLesson; 
+    }
+    return startLesson;
 }
 
 
@@ -180,19 +181,16 @@ export async function GetLessonInfo(lessonspromise,direction=0) { // -1 is previ
     var res;
     await lessonspromise; // zeker weten dat de lessen geladen zijn
     CurrentLesson += direction;
-    CurrentLesson = (CurrentLesson < 0? 0  : ( CurrentLesson >= globalLessonslist.length?globalLessonslist.length-1:CurrentLesson));    
+    CurrentLesson = (CurrentLesson < 0? 0  : ( CurrentLesson >= globalLessonslist.length?globalLessonslist.length-1:CurrentLesson));
     res=globalLessonslist[CurrentLesson];
-    
+
     while (res.chapter && CurrentLesson < globalLessonslist.length) {
-        CurrentLesson += (direction==0?1:direction)
+        CurrentLesson += (direction==0?1:direction);
         CurrentLesson = (CurrentLesson < 0? 0  : ( CurrentLesson >= globalLessonslist.length?globalLessonslist.length-1:CurrentLesson));
         res=globalLessonslist[CurrentLesson];
     }
-    
+
     console.log(`Found id: ${res.videoid}`);
     console.log(CurrentLesson);
     return res.videoid;
 }
-
-
-    
