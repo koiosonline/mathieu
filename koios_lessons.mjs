@@ -58,7 +58,7 @@ class Video {
 var onlyLessonsIndexList=[];
 
 export async function DisplayLessons(LoadVideoCB) {
-    var x=await GetYouTubePlaylists();
+    var x=await getYouTubePlaylists();
     var items=await getYouTubePlayListVideos();
 
     for (var i=0;i<items.length;i++) {

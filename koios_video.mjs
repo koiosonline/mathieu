@@ -17,6 +17,7 @@ console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
     import {SetupLogWindow} from './koios_log.mjs';
     import {SetupChat} from './koios_chat.mjs';
     import {GetSetupLitAndAssInfo,SetupLitAndAss} from './koios_drive.mjs';
+    import {} from './koios_ipfs.mjs';
 
 
 /* General comments
