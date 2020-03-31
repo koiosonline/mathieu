@@ -1,20 +1,18 @@
 /*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
 
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
-import {} from './koios_youtube.mjs';
+import {getYouTubePlaylists,getYouTubePlayListVideos} from './koios_youtube.mjs';
 
-
+/*
 export class Ipfs
 {
   constructor()
   {
-    this.playlist = getYouTubePlaylists();
-    this.playlistVideos = getYouTubePlayListVideos();
   }
 
   getPlaylist()
   {
-    return this.playlist;
+    return await getYouTubePlaylists();
   }
 
   async setPlaylist()
@@ -29,6 +27,7 @@ export class Ipfs
 
   getPlaylistVideos()
   {
+    this.playlistVideos = getYouTubePlayListVideos();
     return this.playlistVideos;
   }
 
@@ -42,7 +41,7 @@ export class Ipfs
 
   }
 }
-
+*/
 
 var ipfspromise;
 
@@ -58,4 +57,21 @@ async function SetupIPFS() {
    console.log("Ipfs libraries loaded");
    ipfspromise =  window.Ipfs.create(); //await??
    return ipfspromise;
+}
+
+
+export async function getPlaylist()
+{
+  return await getYouTubePlaylists();
+}
+
+export async function getPlaylistVideos()
+{
+  this.playlistVideos = getYouTubePlayListVideos();
+  return this.playlistVideos;
+}
+
+export function hoi()
+{
+  console.log("hoi!");
 }

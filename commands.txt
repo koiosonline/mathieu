@@ -1,0 +1,5 @@
+import('https://www.mgatsonides.online:5001/mathieu/koios_youtube.mjs').then(x=> x.sleep(1000).then (x=>console.log("hi")))
+import('https://www.mgatsonides.online:5001/mathieu/koios_youtube.mjs').then(x=> x.getYouTubePlaylists().then (x=>console.log("hi")))
+import('https://gpersoon.com/koios/gerard/koios_util.mjs').then(x=> x.getYouTubePlaylists().then (x=>console.log("hi")))
+
+getYouTubePlaylists
