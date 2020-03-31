@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 /*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
 
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
 import {getYouTubePlaylists,getYouTubePlayListVideos} from './koios_youtube.mjs';
+=======
+//console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
+import {GetYouTubePlaylists as getYouTubePlaylists, GetYouTubePlayListItems as getYouTubePlayListVideos} from './koios_youtube.mjs';
+
+>>>>>>> 3d9ecaa3c37cd4dcd6660551748f8cda4ec7a71d
 
 /*
 export class Ipfs

@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
 //console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
+=======
+console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
+>>>>>>> 3d9ecaa3c37cd4dcd6660551748f8cda4ec7a71d
 
 
-import "https://apis.google.com/js/api.js";
+
+import("https://apis.google.com/js/api.js");
+
+
 //import "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"; // date time conversion
 
 
@@ -13,7 +20,7 @@ loadScriptAsync("https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.
 
 // See https://developers.google.com/youtube/v3/docs/playlists/list?apix=true
 
-export async function getYouTubePlaylists() {
+export async function GetYouTubePlaylists() {
 
     await LoadGapi();
     var list=await gapi.client.youtube.playlists.list({
@@ -30,20 +37,21 @@ export async function getYouTubePlaylists() {
         result.thumbnail = list.result.items[i].snippet.thumbnails.default.url;
         resultlist.push(result);
     }
-    console.log("In getYouTubePlaylists");
-    console.log(resultlist);
+    //console.log("In GetYouTubePlaylists");
+    //console.log(resultlist);
     return resultlist;
 }
 
-export async function getYouTubePlayListVideos() {
+export async function GetYouTubePlayListItems() {
 
     const queryString = window.location.search;
-    console.log(`In getYouTubePlayListVideos queryString=${queryString}`);
+    //console.log(`In GetYouTubePlayListItems queryString=${queryString}`);
 
     const urlParams = new URLSearchParams(queryString);
-    console.log(urlParams);
+    //console.log(urlParams);
 
-    let playlistId = urlParams.get('playlistId') || "PL_tbH3aD86Kt-vJy4Q-rvZtXDmrLMG1Ef";
+    let playlistId = urlParams.get('playlistId') || "PL_tbH3aD86Kt7mITDw67sJMI6M0fRF2Zx";
+    // level 1 "PL_tbH3aD86Kt-vJy4Q-rvZtXDmrLMG1Ef";
 
 
     console.log(`playlistId=${playlistId}`);
@@ -60,8 +68,8 @@ export async function getYouTubePlayListVideos() {
           "pageToken" : nextPageToken
         });
         nextPageToken = list.result.nextPageToken;
-        console.log(list);
-        console.log(`getYouTubePlayListVideos: next ${list.result.items.length} records`);
+        //console.log(list);
+        //console.log(`GetYouTubePlayListItems: next ${list.result.items.length} records`);
         //console.log(nextPageToken);
         var idlist="";
 
@@ -92,7 +100,7 @@ export async function getYouTubePlayListVideos() {
             "id": idlist
         });
 
-        console.log(resultlistindex);
+        //console.log(resultlistindex);
         for (var i=0;i<list2.result.items.length;i++) {
             while (resultlist[resultlistindex].chapter) // skip the chapters
                 resultlistindex++;
@@ -101,6 +109,6 @@ export async function getYouTubePlayListVideos() {
             resultlistindex++;
         }
     } while (nextPageToken);
-    console.log(resultlist);
+    //console.log(resultlist);
     return resultlist;
 }

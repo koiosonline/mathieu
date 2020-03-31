@@ -1,18 +1,21 @@
-/*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
 
 
 import "https://apis.google.com/js/api.js";
 
+
 export async function LoadGapi() {
-  console.log('gapi load start');
+  //console.log('gapi load start');
   await new Promise(function(resolve, reject) {  gapi.load('client:auth2', resolve); });
   gapi.client.setApiKey("AIzaSyBPDSeL1rNL9ILyN2rX11FnHeBePld7HOQ");
-  await gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest");
-  await gapi.client.load("https://www.googleapis.com/discovery/v1/apis/drive/v3/rest");
-  console.log('gapi loaded');
-
-  LoadGapi=function(){}; // next time: do nothing
+  await Promise.all( [ 
+        gapi.client.load("https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"),
+        gapi.client.load("https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"),
+        //   gapi.client.load("https://content.googleapis.com/discovery/v1/apis/slides/v1/rest");  doesn't work because of authorization issues
+       ]
+    );  
+  //console.log('gapi loaded');  
+  LoadGapi=function(){} // next time: do nothing
 }
 
 
@@ -26,10 +29,10 @@ export var loadScriptAsync = function(uri){
       resolve();
     };
   //var firstScriptTag = document.getElementsByTagName('script')[0];
-  //firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-  document.head.appendChild(tag);
+  //firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);  
+  document.head.appendChild(tag);  
 });
-};
+}
 
 
 
@@ -39,16 +42,16 @@ export function sleep(ms) {
 
 
 
-export function LinkButton(nameButton,funct) {
+export function LinkButton(nameButton,funct) {  
     //console.log(`Linking button ${nameButton}`);
-
+    
     var button=document.getElementById(nameButton);
     if (button)
         button.title=nameButton; // add hoover text
-
-    if (button)
-            button.addEventListener("click", ButtonClick);
-
+    
+    if (button) 
+            button.addEventListener("click", ButtonClick);           
+    
     async function ButtonClick(event) {
         console.log(`Button pressed: ${nameButton}`);
         //MakeFullScreen(); // do this for every button
@@ -60,109 +63,133 @@ export function LinkButton(nameButton,funct) {
                 sleep(1000), // show color for at least 1 sec.
                 funct(button)
             ]
-            );
-        button.style.color=orgcolor;
+            );          
+        button.style.color=orgcolor;   
     }
 }
 
 
 export function HideButton(nameButton,fHide) {
     var button=document.getElementById(nameButton);
-    if (button) {
+    if (button) {  
         button.style.display=fHide?"none":"flex"; // flex is used to center the icons in the button
     }
-}
+}    
 
 
 
 
  export function DragItem(draggable,dragarea,mousearea,XYCB) {
-    var domiddraggable=document.getElementById(draggable);
-    var domidmousearea=document.getElementById(mousearea);
-    var domiddragarea=document.getElementById(dragarea);
-
-
-     async function SliderDrag(ev) {
+    var domiddraggable=document.getElementById(draggable); 
+    var domidmousearea=document.getElementById(mousearea); 
+    var domiddragarea=document.getElementById(dragarea); 
+    
+        
+     async function SliderDrag(ev) {   
         var arearect=domiddragarea.getBoundingClientRect();   // recalc every time
-        ev.preventDefault();
+        ev.preventDefault()            
         var x=undefined;
         var y=undefined;
         var percx=-1;
         var percy=-1;
 
         if (ev.touches && ev.touches[0] && ev.touches[0].clientX) x=ev.touches[0].clientX;
-        if (ev.clientX) x=ev.clientX;
-        if (x) percx = (x - arearect.left) / arearect.width;
+        if (ev.clientX) x=ev.clientX; 
+        if (x) percx = (x - arearect.left) / arearect.width             
         if (ev.touches && ev.touches[0] && ev.touches[0].clientY) y=ev.touches[0].clientY;
-        if (ev.clientY) y=ev.clientY;
-        if (y) percy = (y - arearect.top) / arearect.height;
+        if (ev.clientY) y=ev.clientY; 
+        if (y) percy = (y - arearect.top) / arearect.height     
         XYCB(percx,percy);
     }
-
-    function SetzIndex(fChange) {
-        domiddraggable.style.zIndex = (fChange? "-1": "");
-        domidmousearea.style.zIndex  = (fChange? "1": "");
-
-
-        var arrchildren=domidmousearea.children;
-        for (var i=0;i<arrchildren.length;i++)
-            arrchildren[i].style.zIndex=(fChange? "-2": "");
-
+    
+    function SetzIndex(fChange) {  
+        domiddraggable.style.zIndex = (fChange? "-1": "")
+        domidmousearea.style.zIndex  = (fChange? "1": "")
+        
+        
+        var arrchildren=domidmousearea.children;    
+        for (var i=0;i<arrchildren.length;i++) 
+            arrchildren[i].style.zIndex=(fChange? "-2": "")      
+        
     }
-
+    
     async function SliderStart(ev) {
-        console.log(`Start dragging`);
-        SetzIndex(true); // set all childeren to lower z-index, so the mouse works well
+        console.log(`Start dragging`);        
+        SetzIndex(true); // set all childeren to lower z-index, so the mouse works well        
         SliderDrag(ev);
-        domidmousearea.addEventListener("dragover",   SliderDrag);
-        domidmousearea.addEventListener("drop",       SliderStop);
-        domidmousearea.addEventListener("dragend",    SliderStop);
-        domidmousearea.addEventListener("dragleave",  SliderStop);
-        domidmousearea.addEventListener("dragexit",   SliderStop);
+        domidmousearea.addEventListener("dragover",   SliderDrag);           
+        domidmousearea.addEventListener("drop",       SliderStop);            
+        domidmousearea.addEventListener("dragend",    SliderStop);  
+        domidmousearea.addEventListener("dragleave",  SliderStop);  
+        domidmousearea.addEventListener("dragexit",   SliderStop);  
         domidmousearea.addEventListener("mousemove",  SliderDrag);
-        domidmousearea.addEventListener("mouseup",    SliderStop);
-        domidmousearea.addEventListener("mouseleave", SliderStop);
+        domidmousearea.addEventListener("mouseup",    SliderStop);  
+        domidmousearea.addEventListener("mouseleave", SliderStop);          
         domidmousearea.addEventListener("touchmove",  SliderDrag);
         domidmousearea.addEventListener("touchend",   SliderStop);
-        domidmousearea.addEventListener("touchcancel",SliderStop);
-    }
-
+        domidmousearea.addEventListener("touchcancel",SliderStop);        
+    }       
+    
     async function SliderStop(ev) {
         console.log("Stop dragging");
         SetzIndex(false); // back to normal
-        domidmousearea.removeEventListener("dragover",   SliderDrag);
-        domidmousearea.removeEventListener("drop",       SliderStop);
-        domidmousearea.removeEventListener("dragend",    SliderStop);
-        domidmousearea.removeEventListener("dragleave",  SliderStop);
-        domidmousearea.removeEventListener("dragexit",   SliderStop);
-        domidmousearea.removeEventListener("mousemove",  SliderDrag);
-        domidmousearea.removeEventListener("mouseup",    SliderStop);
+        domidmousearea.removeEventListener("dragover",   SliderDrag);           
+        domidmousearea.removeEventListener("drop",       SliderStop);            
+        domidmousearea.removeEventListener("dragend",    SliderStop);  
+        domidmousearea.removeEventListener("dragleave",  SliderStop);  
+        domidmousearea.removeEventListener("dragexit",   SliderStop);          
+        domidmousearea.removeEventListener("mousemove",  SliderDrag);   
+        domidmousearea.removeEventListener("mouseup",    SliderStop);  
         domidmousearea.removeEventListener("mouseleave", SliderStop);
         domidmousearea.removeEventListener("touchmove",  SliderDrag);
         domidmousearea.removeEventListener("touchend",   SliderStop);
         domidmousearea.removeEventListener("touchcancel",SliderStop);
-    }
+    }   
     domiddraggable.addEventListener('mousedown',  SliderStart);
-    domiddraggable.addEventListener('touchstart', SliderStart, {passive:true} );
-  //  domiddraggable.addEventListener('dragstart',  SliderStart);
+    domiddraggable.addEventListener('touchstart', SliderStart, {passive:true} );     
+  //  domiddraggable.addEventListener('dragstart',  SliderStart);    
 }
 
 export function InsertIFrame(windowid,url) {
-   var domid=document.getElementById(windowid);
-   console.log(domid);
+   var domid=document.getElementById(windowid);   
+   //console.log(domid);
    var iframe=document.createElement("iframe");
     iframe.src=url;
-    iframe.width="100%";
-    iframe.height="100%";
-    iframe.style.height="100%";
-    iframe.style.minHeight="100%";
+    iframe.width="100%"
+    iframe.height="100%"
+    iframe.style.height="100%"
+    iframe.style.minHeight="100%" 
     iframe.style.position="absolute";
     iframe.style.top="0";
     iframe.style.left="0";
    // iframe.style.outline="1px";
    // iframe.style.outlineStyle="solid";
     domid.appendChild(iframe);
-    console.log("In InsertIFrame");
-    console.log(iframe);
+    //console.log("In InsertIFrame");
+    //console.log(iframe);
     return iframe;
 }
+
+
+// based on https://jsmanifest.com/the-publish-subscribe-pattern-in-javascript/
+
+
+const subscribers = {}
+
+export function publish(eventName, data) {
+    console.log(`publish ${eventName}`);
+    if (!Array.isArray(subscribers[eventName])) { return }
+    subscribers[eventName].forEach((callback) => {  callback(data)  })
+}
+
+export function subscribe(eventName, callback) {
+  if (!Array.isArray(subscribers[eventName])) {
+    subscribers[eventName] = []
+  }
+  subscribers[eventName].push(callback)
+  const index = subscribers[eventName].length - 1 
+  var f= function(){subscribers[eventName].splice(index, 1) }
+  return f;
+}
+  
+  
