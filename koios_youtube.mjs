@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-/*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
-//console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
-=======
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
->>>>>>> 3d9ecaa3c37cd4dcd6660551748f8cda4ec7a71d
 
 
 
@@ -42,7 +37,7 @@ export async function GetYouTubePlaylists() {
     return resultlist;
 }
 
-export async function GetYouTubePlayListItems() {
+export async function GetYouTubePlayListItems(idInput) {
 
     const queryString = window.location.search;
     //console.log(`In GetYouTubePlayListItems queryString=${queryString}`);
@@ -50,7 +45,7 @@ export async function GetYouTubePlayListItems() {
     const urlParams = new URLSearchParams(queryString);
     //console.log(urlParams);
 
-    let playlistId = urlParams.get('playlistId') || "PL_tbH3aD86Kt7mITDw67sJMI6M0fRF2Zx";
+    let playlistId = urlParams.get('playlistId') || idInput;
     // level 1 "PL_tbH3aD86Kt-vJy4Q-rvZtXDmrLMG1Ef";
 
 
@@ -111,4 +106,14 @@ export async function GetYouTubePlayListItems() {
     } while (nextPageToken);
     //console.log(resultlist);
     return resultlist;
+}
+
+export async function forIPFSexport()     //creates an array of objects in the right format for IPFS export.
+{
+  var totalYoutubeInfo = await GetYouTubePlaylists();
+  for(var i=0;i<totalYoutubeInfo.length;i++)
+  {
+    totalYoutubeInfo[i].videos = await GetYouTubePlayListItems(totalYoutubeInfo[i].id);
+  }
+  return totalYoutubeInfo;
 }
