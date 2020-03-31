@@ -1,5 +1,5 @@
 /*jshint esversion: 8, maxstatements:15, maxparams:3, maxdepth:3, maxcomplexity:5*/
-console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
+//console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
 
 
 import "https://apis.google.com/js/api.js";
