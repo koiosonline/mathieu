@@ -3,7 +3,7 @@ console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
  // imports
     import {SetupVideoWindowYouTube,SetVideoTitle,ShowVideoTitle} from './koios_playvideo.mjs';
     import {DisplayLessons, SelectLesson,CurrentLesson,LastLesson} from './koios_lessons.mjs';
-    import {LinkButton,HideButton,DragItem,publish,subscribe} from './koios_util.mjs';
+    import {LinkButton,HideButton,DragItem,publish,subscribe,LinkClickButton,LinkToggleButton} from './koios_util.mjs';
     import {GetSubTitlesAndSheets} from './koios_subtitles.mjs';
     import {currentlang,UpdateTranscript,FoundTranscript,SelectLanguage,SetVideoTranscriptCallbacks} from './koios_showtranscript.mjs';
     import {} from './koios_getslides.mjs';
@@ -17,6 +17,8 @@ console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
     import {GetSetupLitAndAssInfo,SetupLitAndAss} from './koios_drive.mjs';
     import {} from './koios_test.mjs';
     import {Relax,InitPopup} from './koios_popup.mjs';
+    import {DisplayMessageContinous,SwitchDisplayMessageContinous,DisplayMessage} from './koios_messages.mjs';
+
 
 export var player=0;
 export var currentduration;
@@ -42,7 +44,7 @@ var vidproginput=0;
 var vidprogress=0;
 var slider=0; // global
 var playerpromise;
-var fSoundOn;
+var fSoundOn=true;
 }
 function GetDuration() {
     if (video) return video.duration;
@@ -175,7 +177,7 @@ function ToggleSound() {
    EnableSound(fSoundOn);
 
 
-   document.getElementById("audio").style.color=fSoundOn?"red":"white"
+ //  document.getElementById("audio").style.color=fSoundOn?"red":"white"
 }
 function EnableSound(fOn) {
     fSoundOn = fOn;// store state
@@ -228,10 +230,10 @@ function IsVideoPaused(){
         fpaused=( player.getPlayerState() !== 1); // 1 – playing
     return fpaused;
 }
-async function UpdateVideoIndicator(fpaused) {
-    HideButton("start",!fpaused);
-    HideButton("pause",fpaused);
-}
+//async function UpdateVideoIndicator(fpaused) {
+//    HideButton("start",!fpaused);
+//    HideButton("pause",fpaused);
+//}
 export async function startVideo() {
    // console.log("In startVideo");
    //         console.log(player.getDebugText());
@@ -247,7 +249,7 @@ export async function startVideo() {
         if (IsVideoPaused()) // maybe already started via youtube interface
             player.playVideo();
     }
-    UpdateVideoIndicator(false);
+ //   UpdateVideoIndicator(false);
 
     tcallback(); // callbacks for the progress
 }
@@ -260,7 +262,7 @@ function stopVideo() {
     ShowVideoTitle(true);
     if (video) video.pause();
     if (player) player.pauseVideo();
-    UpdateVideoIndicator(true);
+   // UpdateVideoIndicator(true);
     StopSpeak();
 
 
@@ -299,13 +301,29 @@ function ToggleCueVisibility() {
     CueVisible(ToggleCueVisibilityStatus?currentlang:"");
 }
 
+var signs=0;
+async function PlayerLoaded() {
+    signs++;
+    if (signs ==2)
+        publish("playerloaded");
+}
 
 
-subscribe('videostart',  x=> { startVideo(); } );
-subscribe('videocued',   x=> {} ); // do nothing, wait for user to start
-subscribe('videopause',  x=> { stopVideo(); } );
-subscribe('videostop',   x=> { stopVideo(); } );
+subscribe('videostart',  startVideo);
+subscribe('videocued',   PlayerLoaded ); // do nothing, wait for user to start
+subscribe('videopause',  stopVideo);
+subscribe('videostop',   stopVideo);
 subscribe('videoend',    NextVideo);
+
+
+subscribe('slidesloaded',    PlayerLoaded);
+
+
+var fVideoRunning=false;
+
+subscribe('popupdisplayblock',x=> { fVideoRunning=!IsVideoPaused();stopVideo();} );
+subscribe('popupdisplaynone', x=> { if (fVideoRunning) startVideo(); } ); // if running before, start again
+
 
 async function LoadVideo(vidinfo) { // call when first video is loaded or a diffent video is selected
 
@@ -328,18 +346,36 @@ async function LoadVideo(vidinfo) { // call when first video is loaded or a diff
 }
 async function asyncloaded() {
     console.log(`In asyncloaded of script: ${import.meta.url}`);
+    publish("playerstart");
+
 
     var lessonspromise=DisplayLessons(LoadVideo);
 
     playerpromise =SetupVideoWindowYouTube("videoplayer");
-    LinkButton("start",startVideo);
-    LinkButton("stop",stopVideo);
-    LinkButton("pause",TogglePauseVideo);
-    HideButton("pause",true);
-    LinkButton("audio",ToggleSound);
-    LinkButton("speech",ToggleSpeech);
-    LinkButton("subtitle",ToggleCueVisibility);
-    LinkButton("fullscreen",ToggleFullScreen);
+    //LinkButton("start",startVideo);
+
+
+   // LinkClickButton("start");subscribe("startclick",startVideo);
+
+    LinkToggleButton("start",false);subscribe("starton",startVideo);subscribe("startoff",stopVideo);
+
+
+    //LinkButton("stop",stopVideo);
+    //LinkButton("pause",TogglePauseVideo);
+   // HideButton("pause",true);
+    //LinkButton("audio",ToggleSound);
+
+    LinkToggleButton("audio",true);subscribe("audioon",ToggleSound);subscribe("audiooff",ToggleSound);
+
+    //LinkButton("speech",ToggleSpeech);
+    LinkToggleButton("speech",false);subscribe("speechon",ToggleSpeech);subscribe("speechoff",ToggleSpeech);
+
+    //LinkButton("subtitle",ToggleCueVisibility);
+    LinkToggleButton("subtitle",false);subscribe("subtitleon",ToggleCueVisibility);subscribe("subtitleoff",ToggleCueVisibility);
+
+    //LinkButton("fullscreen",ToggleFullScreen);
+    LinkToggleButton("fullscreen",false);subscribe("fullscreenon",ToggleFullScreen);subscribe("fullscreenoff",ToggleFullScreen);
+
     CreateVideoSlider();
     // CreateSoundSlider();
     InitSpeak();
