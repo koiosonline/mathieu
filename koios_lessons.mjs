@@ -1,7 +1,7 @@
 console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
 
 import {GetYouTubePlaylists,GetYouTubePlayListItems}     from './koios_youtube.mjs';
-import {LinkButton,HideButton} from './koios_util.mjs';
+import {LinkButton,HideButton,LinkClickButton,subscribe} from './koios_util.mjs';
 
 // Global vars
 var PrepareLessonsListTemplate;
@@ -125,8 +125,13 @@ function AddLessonsItem(txt,thumbnail,description,videoid,duration) {
     var index = LastLesson;
     var cln = PrepareLessonsListTemplate.cloneNode(true);
     PrepareLessonsListParent.appendChild(cln);
-    cln.getElementsByTagName("div")[0].innerHTML=txt;
-    cln.getElementsByTagName("img")[0].src=thumbnail;
+    //cln.getElementsByTagName("div")[0].innerHTML=txt;
+    //cln.getElementsByTagName("img")[0].src=thumbnail;
+
+
+    cln.getElementsByClassName("lesson-name")[0].innerHTML=txt;
+    cln.getElementsByClassName("lesson-image")[0].src=thumbnail;
+
     cln.id=`lesson-${index}`;
 
     LinkButton(cln.id,x=> {
@@ -143,7 +148,9 @@ function AddChapter(txt) {
     //console.log(`In AddChapter ${txt} `);
     var cln = PrepareChapterTemplate.cloneNode(true);
     PrepareChapterParent.appendChild(cln);
-    cln.getElementsByTagName("div")[0].innerHTML=txt;
+    //cln.getElementsByTagName("div")[0].innerHTML=txt;
+
+    cln.getElementsByClassName("chapter-name")[0].innerHTML=txt;
 }
 
 
@@ -154,8 +161,8 @@ export async function SelectLesson(index) {
     if (index < 0)          index = 0;
     if (index > LastLesson) index = LastLesson;
 
-    HideButton(buttonBack,    index <= 0);
-    HideButton(buttonForward, index >= LastLesson );
+    HideButton("back",    index <= 0);
+    HideButton("forward", index >= LastLesson );
 
     var prevdomid=document.getElementById(`lesson-${CurrentLesson}`);
     if (prevdomid) {
@@ -171,8 +178,15 @@ export async function SelectLesson(index) {
 
 
 function PrepButtons() {
-    buttonBack=LinkButton("back"   ,x=>SelectLesson(CurrentLesson -1));
-    buttonForward=LinkButton("forward",x=>SelectLesson(CurrentLesson +1));
+    //buttonBack=LinkButton("back"   ,x=>SelectLesson(CurrentLesson -1));
+
+    buttonBack=LinkClickButton("back");subscribe("backclick",x=>SelectLesson(CurrentLesson -1));
+
+
+    //buttonForward=LinkButton("forward",x=>SelectLesson(CurrentLesson +1));
+
+    buttonForward=LinkClickButton("forward");subscribe("forwardclick",x=>SelectLesson(CurrentLesson +1));
+
     PrepButtons=function(){} // next time do nothing
 }
 
