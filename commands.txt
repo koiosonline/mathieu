@@ -11,3 +11,9 @@ PL_tbH3aD86KtKGgHhoSTwLARW-Ke5rLzt
 
 instant test command
 import('https://www.mgatsonides.online:5001/mathieu/koios_youtube.mjs').then(x=> x.forIPFSexport().then(y=> console.log(y)));
+
+
+import('https://www.mgatsonides.online:5001/mathieu/koios_ipfs.mjs').then(x=> x.uploadToIpfs().then(y=> console.log(y)));
+
+
+import('https://www.mgatsonides.online:5001/mathieu/koios_ipfs.mjs').then(x=> x.setupIPFS().then(y=> console.log(y)));

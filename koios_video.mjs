@@ -18,7 +18,6 @@ console.log(`In ${window.location.href} starting script: ${import.meta.url}`);
     import {} from './koios_test.mjs';
     import {Relax,InitPopup} from './koios_popup.mjs';
 
-
 export var player=0;
 export var currentduration;
 { // Global variables
