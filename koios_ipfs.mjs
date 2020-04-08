@@ -13,7 +13,7 @@ export async function setupIPFS() {
    return ipfs;
 }
 
-export async function uploadToIpfs()
+export async function uploadYtToIpfs()
 {
   var ipfs = await setupIPFS();
   var hash;                   //IPFS hash
@@ -25,7 +25,7 @@ export async function uploadToIpfs()
   return hash;
 }
 
-export async function getInfoIpfs(hash)
+export async function getYtInfoIpfs(hash)
 {
   var ipfs = await setupIPFS();
   var videoAndPlaylistInfo;
@@ -35,4 +35,10 @@ export async function getInfoIpfs(hash)
     videoAndPlaylistInfo = JSON.parse(result.toString('utf8'));
   }
   return videoAndPlaylistInfo;
+}
+
+export async function uploadSubtitlesIpfs(subtitleData)
+{
+  console.log("in upload IPFS subtitles!!!!");
+  console.log(subtitleData);
 }

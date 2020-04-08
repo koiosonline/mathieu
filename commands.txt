@@ -16,4 +16,6 @@ import('https://www.mgatsonides.online:5001/mathieu/koios_youtube.mjs').then(x=>
 import('https://www.mgatsonides.online:5001/mathieu/koios_ipfs.mjs').then(x=> x.uploadToIpfs().then(y=> console.log(y)));
 
 
+import('https://www.mgatsonides.online:5001/mathieu/koios_ipfs.mjs').then(x=> x.getInfoIpfs("QmTx2nrXi2wguwejZ5FMNnd42T5yTKnfMiWMs8cm2xGfKE").then(y=> console.log(y)));
+
 import('https://www.mgatsonides.online:5001/mathieu/koios_ipfs.mjs').then(x=> x.setupIPFS().then(y=> console.log(y)));
